@@ -63,8 +63,9 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
         var _snapPriceToGrid = config.snapPriceToGrid; //R:snapPriceToGrid = snap  #While this variable =1, snap price to the grid
 
         var priceSnappedToGrid = function(price) {
-            //R: prindex <- which.min((pr-psnap[i])^2)
             //returns price on price grid closest to ttm price implied by excess demand. 
+            //R: prindex <- which.min((pr-psnap[i])^2)
+            //R: pgrid <- pr[prindex] #This is the price snapped to the grid
             return _priceGrid.sort(function(gridPrice1, gridPrice2) {
                 return Math.abs(gridPrice1 - price) - Math.abs(gridPrice2 - price);
             })[0];
