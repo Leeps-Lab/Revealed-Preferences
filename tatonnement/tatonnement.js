@@ -116,7 +116,7 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
                 adjustedPrice = Math.tan(Math.max(newPriceAngle, priceLowerBoundAngle)); //R: D[i] <- max(atan(p[i])+C[i],.01)
             } else {
                 adjustedPrice = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle)); //R: D[i] <- min(atan(p[i])+C[i],1.5608)
-            } //R:adjustedPrice = D[i]
+            } //R:adjustedPrice = tan(D[i])
 
             // If the end of the _weightVector has been reached AND prices are off the grid
             // round new price to closest of {last price - .01, last price, last price + .01}
