@@ -120,7 +120,10 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
 
             // If the end of the _weightVector has been reached AND prices are off the grid
             // round new price to closest of {last price - .01, last price, last price + .01}
-            if (_snapPriceToGrid == false && _weightIndex == (_weightVector.length - 1)) {
+            
+            // R: flipped a bit from analyze_tat.R,  
+            // if(n == 5) is considered first, (If we have moved to the end of the vector)
+            if (_snapPriceToGrid == false && _weightIndex == (_weightVector.length - 1)) { 
                 var priceDiff = roundContext.price - adjustedPrice;
                 if (firstRounded) { // If this condition has been met before
                     if (priceDiff > 0.01) {
@@ -139,6 +142,7 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
                 }
             }
 
+            // R: for (n <= 5)
             if (_snapPriceToGrid) {
                 var snappedPrice = priceSnappedToGrid(adjustedPrice);
                 if (snappedPrice == roundContext.price) {
