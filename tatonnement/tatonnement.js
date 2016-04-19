@@ -101,22 +101,22 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
             var adjustedPrice;
             var excessDemandSign = sign(roundContext.excessDemand);
 
-            var weight = _weightVector[_weightIndex] / _expectedExcess;  //R:var expectedExcess = `ez`
+            var weight = _weightVector[_weightIndex] / _expectedExcess;  //R: k[i]  (expectedExcess = `ez`)
                 
             // make sure angular difference is no more than 15 degrees
-            var angularDiff = weight * roundContext.excessDemandPerCapita;
-            var maxAngularDiff = _maxAngularDiff * excessDemandSign;
-            var constrainedAngularDiff = Math.min(Math.abs(angularDiff), Math.abs(maxAngularDiff)) * excessDemandSign;
-            var newPriceAngle = Math.atan(roundContext.price) + constrainedAngularDiff;
+            var angularDiff = weight * roundContext.excessDemandPerCapita; //R:A[i]
+            var maxAngularDiff = _maxAngularDiff * excessDemandSign;       //R:B[i]
+            var constrainedAngularDiff = Math.min(Math.abs(angularDiff), Math.abs(maxAngularDiff)) * excessDemandSign; //R:C[i]
+            var newPriceAngle = Math.atan(roundContext.price) + constrainedAngularDiff; //R:atan(p[i])+C[i]
 
             // make sure that 0.01 <= price <= 100
             var priceLowerBoundAngle = Math.atan(_priceLowerBound);
             var priceUpperBoundAngle = Math.atan(_priceUpperBound);
             if (constrainedAngularDiff < 0) {
-                adjustedPrice = Math.tan(Math.max(newPriceAngle, priceLowerBoundAngle));
+                adjustedPrice = Math.tan(Math.max(newPriceAngle, priceLowerBoundAngle)); //R: D[i] <- max(atan(p[i])+C[i],.01)
             } else {
-                adjustedPrice = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle));
-            }
+                adjustedPrice = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle)); //R: D[i] <- min(atan(p[i])+C[i],1.5608)
+            } //R:adjustedPrice = D[i]
 
             // If the end of the _weightVector has been reached AND prices are off the grid
             // round new price to closest of {last price - .01, last price, last price + .01}
