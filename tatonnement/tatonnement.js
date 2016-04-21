@@ -52,17 +52,20 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
                                   // in which price are off the grid AND
                                   // the end of the _weightVector has been reached
 
-        var _weightVector = config.weightVector;
-        var _expectedExcess = config.expectedExcess;
+        var _weightVector = config.weightVector; ////R:var weightVector = `k`, k-vector
+        var _expectedExcess = config.expectedExcess; //R:var expectedExcess = `ez`
         
-        var _priceLowerBound = config.priceLowerBound;
-        var _priceUpperBound = config.priceUpperBound;
-        var _maxAngularDiff = config.maxAngularDiff;
+        var _priceLowerBound = config.priceLowerBound; // if not set in config, deaults to 0.1
+        var _priceUpperBound = config.priceUpperBound; // if not set in config, defaults to 100.0
+        var _maxAngularDiff = config.maxAngularDiff;   //if not set in config, defaults to  0.26175
 
-        var _priceGrid = config.priceGrid;
-        var _snapPriceToGrid = config.snapPriceToGrid;
+        var _priceGrid = config.priceGrid; //R:priceGrid = pr
+        var _snapPriceToGrid = config.snapPriceToGrid; //R:snapPriceToGrid = snap  #While this variable =1, snap price to the grid
 
         var priceSnappedToGrid = function(price) {
+            //returns price on price grid closest to ttm price implied by excess demand. 
+            //R: prindex <- which.min((pr-psnap[i])^2)
+            //R: pgrid <- pr[prindex] #This is the price snapped to the grid
             return _priceGrid.sort(function(gridPrice1, gridPrice2) {
                 return Math.abs(gridPrice1 - price) - Math.abs(gridPrice2 - price);
             })[0];
@@ -101,26 +104,29 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
             var adjustedPrice;
             var excessDemandSign = sign(roundContext.excessDemand);
 
-            var weight = _weightVector[_weightIndex] / _expectedExcess;
+            var weight = _weightVector[_weightIndex] / _expectedExcess;  //R: k[i]  (expectedExcess = `ez`)
                 
             // make sure angular difference is no more than 15 degrees
-            var angularDiff = weight * roundContext.excessDemandPerCapita;
-            var maxAngularDiff = _maxAngularDiff * excessDemandSign;
-            var constrainedAngularDiff = Math.min(Math.abs(angularDiff), Math.abs(maxAngularDiff)) * excessDemandSign;
-            var newPriceAngle = Math.atan(roundContext.price) + constrainedAngularDiff;
+            var angularDiff = weight * roundContext.excessDemandPerCapita; //R:A[i]
+            var maxAngularDiff = _maxAngularDiff * excessDemandSign;       //R:B[i]
+            var constrainedAngularDiff = Math.min(Math.abs(angularDiff), Math.abs(maxAngularDiff)) * excessDemandSign; //R:C[i]
+            var newPriceAngle = Math.atan(roundContext.price) + constrainedAngularDiff; //R:atan(p[i])+C[i]
 
             // make sure that 0.01 <= price <= 100
             var priceLowerBoundAngle = Math.atan(_priceLowerBound);
             var priceUpperBoundAngle = Math.atan(_priceUpperBound);
             if (constrainedAngularDiff < 0) {
-                adjustedPrice = Math.tan(Math.max(newPriceAngle, priceLowerBoundAngle));
+                adjustedPrice = Math.tan(Math.max(newPriceAngle, priceLowerBoundAngle)); //R: D[i] <- max(atan(p[i])+C[i],.01)
             } else {
-                adjustedPrice = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle));
-            }
+                adjustedPrice = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle)); //R: D[i] <- min(atan(p[i])+C[i],1.5608)
+            } //R:adjustedPrice = tan(D[i])
 
             // If the end of the _weightVector has been reached AND prices are off the grid
             // round new price to closest of {last price - .01, last price, last price + .01}
-            if (_snapPriceToGrid == false && _weightIndex == (_weightVector.length - 1)) {
+            
+            // R: flipped a bit from analyze_tat.R,  
+            // if(n == 5) is considered first, (If we have moved to the end of the vector)
+            if (_snapPriceToGrid == false && _weightIndex == (_weightVector.length - 1)) { 
                 var priceDiff = roundContext.price - adjustedPrice;
                 if (firstRounded) { // If this condition has been met before
                     if (priceDiff > 0.01) {
@@ -139,6 +145,7 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
                 }
             }
 
+            // R: for (n <= 5)
             if (_snapPriceToGrid) {
                 var snappedPrice = priceSnappedToGrid(adjustedPrice);
                 if (snappedPrice == roundContext.price) {
