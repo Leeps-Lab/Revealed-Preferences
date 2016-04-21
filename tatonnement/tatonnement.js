@@ -109,6 +109,11 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
             var constrainedAngularDiff = Math.min(Math.abs(angularDiff), Math.abs(maxAngularDiff)) * excessDemandSign;
             var newPriceAngle = Math.atan(roundContext.price) + constrainedAngularDiff;
 
+console.log("A: " + angularDiff + "\n");
+console.log("B: " + maxAngularDiff + "\n");
+console.log("C: " + constrainedAngularDiff + "\n");
+
+
             // make sure that 0.01 <= price <= 100
             var priceLowerBoundAngle = Math.atan(_priceLowerBound);
             var priceUpperBoundAngle = Math.atan(_priceUpperBound);
@@ -117,6 +122,9 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
             } else {
                 adjustedPrice = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle));
             }
+
+console.log("pnosnap: " + adjustedPrice + "\n");
+
 
             // If the end of the _weightVector has been reached AND prices are off the grid
             // round new price to closest of {last price - .01, last price, last price + .01}
@@ -151,6 +159,8 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
                     adjustedPrice = snappedPrice;
                 }
             }
+
+console.log("psnap: " + adjustedPrice + "\n");
             return adjustedPrice;
         }
 

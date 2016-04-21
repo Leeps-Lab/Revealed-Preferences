@@ -172,12 +172,14 @@ console.log($scope.endowment);
         rs.trigger("rp.round_started", {
             "round": $scope.currentRound,
             "endowment": $scope.endowment,
-            "price": $scope.price
+            "price": $scope.price,
+            "TTMMarket": $scope.assignedGroup,
+            "inTTM": $scope.inTTM
+
         });
 
         if ((rs.self.get("rp.assignedGroup") == 1 && $scope.group1Finished) ||
             (rs.self.get("rp.assignedGroup") == 2 && $scope.group2Finished)) {
-console.log("GROUP DONE JUST GONNA WAIT HERE");
             $scope.confirm();
         } else {
             $scope.inputEnabled = true;
