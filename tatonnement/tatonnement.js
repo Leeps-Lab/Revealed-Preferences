@@ -20,14 +20,18 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
     }
 
 
-// Change this so it doesn't include "deleted" subjects
     // Sum of excessDemand for entire array
     // excessDemand = selection.x - endowment.x
     api.excessDemand = function(subjectData) {
         return subjectData.reduce(function(sum, data) {
             if (data.inTTM) {
+console.log("inTTM: " + data.inTTM + "\n");
+console.log("selection: " + data.selection + "\n");
+console.log("sum: " + sum + " + excessDemand: " + (data.selection[0] - data.endowment.x) +
+                " = return: " + (sum + (data.selection[0] - data.endowment.x)) + "\n");
                 return sum + (data.selection[0] - data.endowment.x);
             } else {
+console.log("return sum: " + sum + "\n");
                 return sum;
             }
         }, 0); 
@@ -40,17 +44,15 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
             "price":                 price,
             "subjectData":           subjectData,
             "excessDemand":          excessDemand,
-            "excessDemandPerCapita": excessDemand / subjectData.length - 2,
+            "excessDemandPerCapita": excessDemand / (subjectData.length - 2),
         };
     }
 
     api.TatonnementAlgorithm = function(config) {
         var excessDemandHistory1 = [];
         var excessDemandHistory2 = [];
-        var _weightIndex = 0;
-        var firstRounded = false; // this gets set to true after the first round
-                                  // in which price are off the grid AND
-                                  // the end of the _weightVector has been reached
+        var _weightIndex1 = 0;
+        var _weightIndex2 = 0;
 
         var _weightVector = config.weightVector;
         var _expectedExcess = config.expectedExcess;
@@ -60,7 +62,8 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
         var _maxAngularDiff = config.maxAngularDiff;
 
         var _priceGrid = config.priceGrid;
-        var _snapPriceToGrid = config.snapPriceToGrid;
+        var _snapPriceToGrid1 = config.snapPriceToGrid;
+        var _snapPriceToGrid2 = config.snapPriceToGrid;
 
         var priceSnappedToGrid = function(price) {
             return _priceGrid.sort(function(gridPrice1, gridPrice2) {
@@ -68,9 +71,9 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
             })[0];
         }
 
-        var weightVectorFinished = function() {
-            return _weightIndex >= _weightVector.length
-        }
+        // var weightVectorFinished = function() {
+        //     return _weightIndex >= _weightVector.length
+        // }
 
         var addExcessDemand1 = function(excessDemand) {
             // increment weight index if the sign of the excess demand changes
@@ -78,7 +81,7 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
                 var previousDemand = excessDemandHistory1[excessDemandHistory1.length - 1];
 
                 if (excessDemand * previousDemand < 0) {
-                    _weightIndex = Math.min(_weightIndex + 1, _weightVector.length - 1); //_weightIndex never moves beyond end of _weightVector
+                    _weightIndex1 = Math.min(_weightIndex1 + 1, _weightVector.length - 1); //_weightIndex1 never moves beyond end of _weightVector
                 }
             }
             excessDemandHistory1.push(excessDemand);
@@ -90,18 +93,21 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
                 var previousDemand = excessDemandHistory2[excessDemandHistory2.length - 1];
 
                 if (excessDemand * previousDemand < 0) {
-                    _weightIndex = Math.min(_weightIndex + 1, _weightVector.length - 1); //_weightIndex never moves beyond end of _weightVector
+                    _weightIndex2 = Math.min(_weightIndex2 + 1, _weightVector.length - 1); //_weightIndex2 never moves beyond end of _weightVector
                 }
             }
             excessDemandHistory2.push(excessDemand);
         }
 
 // PROBABLY NEED TO CHANGE THIS
-        var adjustedPrice = function(roundContext) {
-            var adjustedPrice;
+        var adjustedPrice1 = function(roundContext) {
+            var adjustedPrice1;
             var excessDemandSign = sign(roundContext.excessDemand);
 
-            var weight = _weightVector[_weightIndex] / _expectedExcess;
+            var weight = _weightVector[_weightIndex1] / _expectedExcess;
+
+console.log("excessDemandPerCapita1: " + roundContext.excessDemandPerCapita + "\n");
+console.log("weight1: " + weight + "\n");
                 
             // make sure angular difference is no more than 15 degrees
             var angularDiff = weight * roundContext.excessDemandPerCapita;
@@ -109,59 +115,78 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
             var constrainedAngularDiff = Math.min(Math.abs(angularDiff), Math.abs(maxAngularDiff)) * excessDemandSign;
             var newPriceAngle = Math.atan(roundContext.price) + constrainedAngularDiff;
 
-console.log("A: " + angularDiff + "\n");
-console.log("B: " + maxAngularDiff + "\n");
-console.log("C: " + constrainedAngularDiff + "\n");
+console.log("A1: " + angularDiff + "\n");
+console.log("B1: " + maxAngularDiff + "\n");
+console.log("C1: " + constrainedAngularDiff + "\n");
 
 
             // make sure that 0.01 <= price <= 100
             var priceLowerBoundAngle = Math.atan(_priceLowerBound);
             var priceUpperBoundAngle = Math.atan(_priceUpperBound);
             if (constrainedAngularDiff < 0) {
-                adjustedPrice = Math.tan(Math.max(newPriceAngle, priceLowerBoundAngle));
+                adjustedPrice1 = Math.tan(Math.max(newPriceAngle, priceLowerBoundAngle));
             } else {
-                adjustedPrice = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle));
+                adjustedPrice1 = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle));
             }
 
-console.log("pnosnap: " + adjustedPrice + "\n");
+console.log("pnosnap1: " + adjustedPrice1 + "\n");
 
-
-            // If the end of the _weightVector has been reached AND prices are off the grid
-            // round new price to closest of {last price - .01, last price, last price + .01}
-            if (_snapPriceToGrid == false && _weightIndex == (_weightVector.length - 1)) {
-                var priceDiff = roundContext.price - adjustedPrice;
-                if (firstRounded) { // If this condition has been met before
-                    if (priceDiff > 0.01) {
-                        adjustedPrice = roundTwoPlaces(roundContext.price) - 0.01;
-                    }
-                    else if (priceDiff < -0.01) {
-                        adjustedPrice = roundTwoPlaces(roundContext.price) + 0.01;
-                    }
-                    else {
-                        adjustedPrice = roundTwoPlaces(adjustedPrice);
-                    }
-                } else { // First time this condition has been met,
-                         // price does not depend on last price
-                        firstRounded = true;
-                        adjustedPrice = roundTwoPlaces(adjustedPrice);
-                }
-            }
-
-            if (_snapPriceToGrid) {
-                var snappedPrice = priceSnappedToGrid(adjustedPrice);
+            if (_snapPriceToGrid1) {
+                var snappedPrice = priceSnappedToGrid(adjustedPrice1);
                 if (snappedPrice == roundContext.price) {
-                    if (_weightIndex == (_weightVector.length - 1)) {
-                        firstRounded = true;
-                        adjustedPrice = roundTwoPlaces(adjustedPrice);
-                    }
-                    _snapPriceToGrid = false;
+                    _snapPriceToGrid1 = false;
                 } else {
-                    adjustedPrice = snappedPrice;
+                    adjustedPrice1 = snappedPrice;
                 }
             }
 
-console.log("psnap: " + adjustedPrice + "\n");
-            return adjustedPrice;
+console.log("psnap1: " + adjustedPrice1 + "\n");
+            return adjustedPrice1;
+        }
+
+
+        var adjustedPrice2 = function(roundContext) {
+            var adjustedPrice2;
+            var excessDemandSign = sign(roundContext.excessDemand);
+
+            var weight = _weightVector[_weightIndex2] / _expectedExcess;
+
+console.log("excessDemandPerCapita2: " + roundContext.excessDemandPerCapita + "\n");
+console.log("weight2: " + weight + "\n");
+                
+            // make sure angular difference is no more than 15 degrees
+            var angularDiff = weight * roundContext.excessDemandPerCapita;
+            var maxAngularDiff = _maxAngularDiff * excessDemandSign;
+            var constrainedAngularDiff = Math.min(Math.abs(angularDiff), Math.abs(maxAngularDiff)) * excessDemandSign;
+            var newPriceAngle = Math.atan(roundContext.price) + constrainedAngularDiff;
+
+console.log("A2: " + angularDiff + "\n");
+console.log("B2: " + maxAngularDiff + "\n");
+console.log("C2: " + constrainedAngularDiff + "\n");
+
+
+            // make sure that 0.01 <= price <= 100
+            var priceLowerBoundAngle = Math.atan(_priceLowerBound);
+            var priceUpperBoundAngle = Math.atan(_priceUpperBound);
+            if (constrainedAngularDiff < 0) {
+                adjustedPrice2 = Math.tan(Math.max(newPriceAngle, priceLowerBoundAngle));
+            } else {
+                adjustedPrice2 = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle));
+            }
+
+console.log("pnosnap2: " + adjustedPrice2 + "\n");
+
+            if (_snapPriceToGrid2) {
+                var snappedPrice = priceSnappedToGrid(adjustedPrice2);
+                if (snappedPrice == roundContext.price) {
+                    _snapPriceToGrid2 = false;
+                } else {
+                    adjustedPrice2 = snappedPrice;
+                }
+            }
+
+console.log("psnap2: " + adjustedPrice2 + "\n");
+            return adjustedPrice2;
         }
 
         var adjustedAllocation = function (selection, endowment, roundContext, marketMaker) {
@@ -208,15 +233,12 @@ console.log("psnap: " + adjustedPrice + "\n");
             return allocation;
         }
 
-        var roundTwoPlaces = function (num) {
-            return +(Math.round(num + "e+2") + "e-2");
-        }
-
         return {
-            "weightVectorFinished": weightVectorFinished,
+            // "weightVectorFinished": weightVectorFinished,
             "addExcessDemand1": addExcessDemand1,
             "addExcessDemand2": addExcessDemand2,
-            "adjustedPrice": adjustedPrice,
+            "adjustedPrice1": adjustedPrice1,
+            "adjustedPrice2": adjustedPrice2,
             "adjustedAllocation": adjustedAllocation
         };
     }

@@ -103,8 +103,6 @@ RedwoodRevealedPreferences.controller("RPStartController",
 
             $scope.assignedGroup = assignedGroup.group;
             $scope.inTTM = assignedGroup.inTTM;
-// console.log("assignedGroup: " + $scope.assignedGroup + "\n");
-// console.log("inTTM: " + $scope.inTTM + "\n");
 
             rs.set("rp.assignedGroup", $scope.assignedGroup);
             rs.set("rp.inTTM", $scope.inTTM);
@@ -129,8 +127,6 @@ RedwoodRevealedPreferences.controller("RPStartController",
     });
 
     rs.on("rp.next_round", function () {
-console.log($scope.endowment);
-
 
         //Reset the text on the button to reflect that it is 'active'
         $scope.ButtonText = "Confirm";
@@ -172,9 +168,7 @@ console.log($scope.endowment);
         rs.trigger("rp.round_started", {
             "round": $scope.currentRound,
             "endowment": $scope.endowment,
-            "price": $scope.price,
-            "TTMMarket": $scope.assignedGroup,
-            "inTTM": $scope.inTTM
+            "price": $scope.price
 
         });
 
@@ -197,135 +191,135 @@ console.log($scope.endowment);
              *****************************************/
     // if (!$scope.config.TTMPeriod) {
             //Coordinates where amounts of good x and y are equal
-            // var middle = {};
-            // middle.x = ($scope.endowment.y + $scope.price * $scope.endowment.x) / (1 + $scope.price);
-            // middle.y = middle.x;
+            var middle = {};
+            middle.x = ($scope.endowment.y + $scope.price * $scope.endowment.x) / (1 + $scope.price);
+            middle.y = middle.x;
 
-            // // Coordinates of max of good with highest endowment
-            // var corner = {};
-            // if ($scope.endowment.x != 0) {
-            //     if ($scope.price <= 1) {
-            //         corner.x = $scope.endowment.x;
-            //         corner.y = $scope.endowment.y;
-            //     } else {
-            //         corner.x = 0;
-            //         corner.y = ($scope.price * $scope.endowment.x);
-            //     }
-            // } else {
-            //     if ($scope.price >= 1) {
-            //         corner.x = $scope.endowment.x;
-            //         corner.y = $scope.endowment.y;
-            //     } else {
-            //         corner.x = ((1 / $scope.price) * $scope.endowment.y);
-            //         corner.y = 0;
-            //     }
-            // }
+            // Coordinates of max of good with highest endowment
+            var corner = {};
+            if ($scope.endowment.x != 0) {
+                if ($scope.price <= 1) {
+                    corner.x = $scope.endowment.x;
+                    corner.y = $scope.endowment.y;
+                } else {
+                    corner.x = 0;
+                    corner.y = ($scope.price * $scope.endowment.x);
+                }
+            } else {
+                if ($scope.price >= 1) {
+                    corner.x = $scope.endowment.x;
+                    corner.y = $scope.endowment.y;
+                } else {
+                    corner.x = ((1 / $scope.price) * $scope.endowment.y);
+                    corner.y = 0;
+                }
+            }
 
-            // // For use in 3 "type" test
+            // For use in 3 "type" test
 
-            // // Coordinates 1/3 of the way between the middle and corner
-            // var onethird = {};
-            // onethird.x = ((2/3) * middle.x) + ((1/3) * corner.x);
-            // onethird.y = ((2/3) * middle.y) + ((1/3) * corner.y);
+            // Coordinates 1/3 of the way between the middle and corner
+            var onethird = {};
+            onethird.x = ((2/3) * middle.x) + ((1/3) * corner.x);
+            onethird.y = ((2/3) * middle.y) + ((1/3) * corner.y);
 
-            // // Coordinates 3/4 of the way between the middle and corner
-            // var threeforths = {};
-            // threeforths.x = ((1/4) * middle.x) + ((3/4) * corner.x);
-            // threeforths.y = ((1/4) * middle.y) + ((3/4) * corner.y);
+            // Coordinates 3/4 of the way between the middle and corner
+            var threeforths = {};
+            threeforths.x = ((1/4) * middle.x) + ((3/4) * corner.x);
+            threeforths.y = ((1/4) * middle.y) + ((3/4) * corner.y);
 
-            // // For use in 6 "type" test
+            // For use in 6 "type" test
 
-            // // Coordinates 20% of the way between the middle and corner
-            // var twenty = {};
-            // twenty.x = ((8/10) * middle.x) + ((2/10) * corner.x);
-            // twenty.y = ((8/10) * middle.y) + ((2/10) * corner.y);
+            // Coordinates 20% of the way between the middle and corner
+            var twenty = {};
+            twenty.x = ((8/10) * middle.x) + ((2/10) * corner.x);
+            twenty.y = ((8/10) * middle.y) + ((2/10) * corner.y);
 
-            // // Coordinates 40% of the way between the middle and corner
-            // var forty = {};
-            // forty.x = ((6/10) * middle.x) + ((4/10) * corner.x);
-            // forty.y = ((6/10) * middle.y) + ((4/10) * corner.y);
+            // Coordinates 40% of the way between the middle and corner
+            var forty = {};
+            forty.x = ((6/10) * middle.x) + ((4/10) * corner.x);
+            forty.y = ((6/10) * middle.y) + ((4/10) * corner.y);
 
-            // // Coordinates 60% of the way between the middle and corner
-            // var sixty = {};
-            // sixty.x = ((4/10) * middle.x) + ((6/10) * corner.x);
-            // sixty.y = ((4/10) * middle.y) + ((6/10) * corner.y);
+            // Coordinates 60% of the way between the middle and corner
+            var sixty = {};
+            sixty.x = ((4/10) * middle.x) + ((6/10) * corner.x);
+            sixty.y = ((4/10) * middle.y) + ((6/10) * corner.y);
 
-            // // Coordinates 80% of the way between middle and corner
-            // var eighty = {};
-            // eighty.x = ((2/10) * middle.x) + ((8/10) * corner.x);
-            // eighty.y = ((2/10) * middle.y) + ((8/10) * corner.y);
+            // Coordinates 80% of the way between middle and corner
+            var eighty = {};
+            eighty.x = ((2/10) * middle.x) + ((8/10) * corner.x);
+            eighty.y = ((2/10) * middle.y) + ((8/10) * corner.y);
 
 
-            // var mychoice = {};
+            var mychoice = {};
 
-            // // EITHER USE THIS OR 6 subject "type" NOT BOTH
-            // // 3 subject "types"
-            // // if (rs.self.user_id % 3 == 0) { 
-            // //     mychoice.x = middle.x;
-            // //     mychoice.y = middle.y;
-            // // } else if (rs.self.user_id % 3 == 1) { 
-            // //     mychoice.x = onethird.x;
-            // //     mychoice.y = onethird.y;
-            // // } else {
-            // //     mychoice.x = threeforths.x;
-            // //     mychoice.y = threeforths.y;
-            // // }
-
-            // // EITHER USE THIS OR 3 subject "type" NOT BOTH
-            // // 16 subject "types"
-            // if (rs.self.user_id % 16 == 0) {
+            // EITHER USE THIS OR 6 subject "type" NOT BOTH
+            // 3 subject "types"
+            // if (rs.self.user_id % 3 == 0) { 
             //     mychoice.x = middle.x;
             //     mychoice.y = middle.y;
-            // } else if (rs.self.user_id % 16 == 1) {
-            //     mychoice.x = corner.x;
-            //     mychoice.y = corner.y;
-            // } else if (rs.self.user_id % 16 == 2) {
-            //     mychoice.x = twenty.x;
-            //     mychoice.y = twenty.y;
-            // } else if (rs.self.user_id % 16 == 3) {
-            //     mychoice.x = forty.x;
-            //     mychoice.y = forty.y;
-            // } else if (rs.self.user_id % 16 == 4) {
-            //     mychoice.x = sixty.x;
-            //     mychoice.y = sixty.y;
-            // } else if (rs.self.user_id % 16 == 5) {
-            //     mychoice.x = eighty.x;
-            //     mychoice.y = eighty.y;
-            // } else if (rs.self.user_id % 16 == 6) {
+            // } else if (rs.self.user_id % 3 == 1) { 
             //     mychoice.x = onethird.x;
             //     mychoice.y = onethird.y;
-            // }else if (rs.self.user_id % 16 == 7) {
-            //     mychoice.x = middle.x;
-            //     mychoice.y = middle.y;
-            // } else if (rs.self.user_id % 16 == 8) {
-            //     mychoice.x = corner.x;
-            //     mychoice.y = corner.y;
-            // } else if (rs.self.user_id % 16 == 9) {
-            //     mychoice.x = twenty.x;
-            //     mychoice.y = twenty.y;
-            // } else if (rs.self.user_id % 16 == 10) {
-            //     mychoice.x = forty.x;
-            //     mychoice.y = forty.y;
-            // }else if (rs.self.user_id % 16 == 11) {
-            //     mychoice.x = sixty.x;
-            //     mychoice.y = sixty.y;
-            // } else if (rs.self.user_id % 16 == 12) {
+            // } else {
             //     mychoice.x = threeforths.x;
             //     mychoice.y = threeforths.y;
-            // } else if (rs.self.user_id % 16 == 13) {
-            //     mychoice.x = onethird.x;
-            //     mychoice.y = onethird.y;
-            // } else if (rs.self.user_id % 16 == 14) {
-            //     mychoice.x = eighty.x;
-            //     mychoice.y = eighty.y;
-            // } else {
-            //     mychoice.x = threeforths.x;
-            //     mychoice.y = threeforths.y;                
             // }
+
+            // EITHER USE THIS OR 3 subject "type" NOT BOTH
+            // 16 subject "types"
+            if (rs.self.user_id % 16 == 0) {
+                mychoice.x = middle.x;
+                mychoice.y = middle.y;
+            } else if (rs.self.user_id % 16 == 1) {
+                mychoice.x = corner.x;
+                mychoice.y = corner.y;
+            } else if (rs.self.user_id % 16 == 2) {
+                mychoice.x = twenty.x;
+                mychoice.y = twenty.y;
+            } else if (rs.self.user_id % 16 == 3) {
+                mychoice.x = forty.x;
+                mychoice.y = forty.y;
+            } else if (rs.self.user_id % 16 == 4) {
+                mychoice.x = sixty.x;
+                mychoice.y = sixty.y;
+            } else if (rs.self.user_id % 16 == 5) {
+                mychoice.x = eighty.x;
+                mychoice.y = eighty.y;
+            } else if (rs.self.user_id % 16 == 6) {
+                mychoice.x = onethird.x;
+                mychoice.y = onethird.y;
+            }else if (rs.self.user_id % 16 == 7) {
+                mychoice.x = middle.x;
+                mychoice.y = middle.y;
+            } else if (rs.self.user_id % 16 == 8) {
+                mychoice.x = corner.x;
+                mychoice.y = corner.y;
+            } else if (rs.self.user_id % 16 == 9) {
+                mychoice.x = twenty.x;
+                mychoice.y = twenty.y;
+            } else if (rs.self.user_id % 16 == 10) {
+                mychoice.x = forty.x;
+                mychoice.y = forty.y;
+            }else if (rs.self.user_id % 16 == 11) {
+                mychoice.x = sixty.x;
+                mychoice.y = sixty.y;
+            } else if (rs.self.user_id % 16 == 12) {
+                mychoice.x = threeforths.x;
+                mychoice.y = threeforths.y;
+            } else if (rs.self.user_id % 16 == 13) {
+                mychoice.x = onethird.x;
+                mychoice.y = onethird.y;
+            } else if (rs.self.user_id % 16 == 14) {
+                mychoice.x = eighty.x;
+                mychoice.y = eighty.y;
+            } else {
+                mychoice.x = threeforths.x;
+                mychoice.y = threeforths.y;                
+            }
            
-            // $scope.selection = [mychoice.x, mychoice.y];
-            // rs.trigger("rp.selection", $scope.selection);
-            // $scope.confirm();
+            $scope.selection = [mychoice.x, mychoice.y];
+            rs.trigger("rp.selection", $scope.selection);
+            $scope.confirm();
     // }
             /****************************************
              * END TEST
@@ -396,11 +390,8 @@ console.log($scope.endowment);
                 }
 
 console.log("assignedGroup: " + rs.self.get("rp.assignedGroup") + "\n");
-console.log("group1Finished: " + $scope.group1Finished + "\n");
-console.log("group2Finished: " + $scope.group2Finished + "\n");
 
                 if (rs.self.get("rp.assignedGroup") == 1 && !$scope.group1Finished) {
-console.log("in if");
 
                     // Compute tatonnement data for this round
                     var subjectData1 = ta.getSubjectData(group1);
@@ -439,7 +430,6 @@ console.log("in if");
                                                     $scope.config.marketMaker);
 
                         $scope.selection = [actualAllocation.x, actualAllocation.y];
-console.log("FINAL DECISION g1: " + $scope.selection + "\n");
 
                         // reset rounds under epsilon
                         rs.set("rp.rounds_under_epsilon1_1", 0);
@@ -451,15 +441,13 @@ console.log("FINAL DECISION g1: " + $scope.selection + "\n");
                         // Mark group as finished
                         rs.trigger("rp.group1Finished");
                         rs.send("rp.group1Finished");
-console.log("group 1 should be true!!!!");
 
                     } else {
                         // Get adjusted price
-                        newPrice = tatonnement.adjustedPrice(roundContext1);
+                        newPrice = tatonnement.adjustedPrice1(roundContext1);
                     }
 
                 } else if (rs.self.get("rp.assignedGroup") == 2 && !$scope.group2Finished) {
-console.log("in else if");
                     // Compute tatonnement data for this round
                     var subjectData2 = ta.getSubjectData(group2);
                     var roundContext2 = ta.RoundContext(currentPrice, subjectData2);
@@ -497,7 +485,6 @@ console.log("in else if");
                                                     $scope.config.marketMaker);
 
                         $scope.selection = [actualAllocation.x, actualAllocation.y];
-console.log("FINAL DECISION g2: " + $scope.selection + "\n");
 
                         // reset rounds under epsilon
                         rs.set("rp.rounds_under_epsilon1_2", 0);
@@ -509,19 +496,16 @@ console.log("FINAL DECISION g2: " + $scope.selection + "\n");
                         // Mark group as finished
                         rs.trigger("rp.group2Finished");
                         rs.send("rp.group2Finished");
-console.log("group 2 should be true!!!!");
 
                     } else {
                         // Get adjusted price
-                        newPrice = tatonnement.adjustedPrice(roundContext2);
+                        newPrice = tatonnement.adjustedPrice2(roundContext2);
                     }
 
                 } else if ($scope.group1Finished == true && $scope.group2Finished == true) {
-console.log("in end if");
                     rs.next_period();
                     return;
                 } else {
-console.log("nothing should happen...just go to next round");
                 }
 
                 // Proceed to next round
@@ -531,7 +515,6 @@ console.log("nothing should happen...just go to next round");
             } 
             // Non-TTM Periods
             else {
-console.log("no assignedGroup");
                 var actualAllocation = {
                     "x": $scope.selection[0],
                     "y": $scope.selection[1]
@@ -547,20 +530,16 @@ console.log("no assignedGroup");
 
     rs.on("rp.group1Finished", function () {
         $scope.group1Finished = true;
-console.log("ON Set group1Finished" + $scope.group1Finished + "\n");
     });
     rs.recv("rp.group1Finished", function () {
         $scope.group1Finished = true;
-console.log("RECV Set group1Finished" + $scope.group1Finished + "\n");
     });
 
     rs.on("rp.group2Finished", function () {
         $scope.group2Finished = true;
-console.log("ON Set group2Finished" + $scope.group2Finished + "\n");
     });
     rs.recv("rp.group2Finished", function () {
         $scope.group2Finished = true;
-console.log("RECV Set group2Finished" + $scope.group2Finished + "\n");
     });
 
     // Receive result (whether X or Y was chosen) from admin.
@@ -572,7 +551,6 @@ console.log("RECV Set group2Finished" + $scope.group2Finished + "\n");
             $scope.finalResult = result;
             rs.next_period($scope.config.delay);
         } else if (!$scope.config.TTMPeriod) {
-console.log("Going to next period now");
             rs.next_period();
         }
     });
