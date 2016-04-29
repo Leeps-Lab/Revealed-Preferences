@@ -56,17 +56,6 @@ RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs)
         * Delete four subjects
         *******************************/ 
 
-// console.log("subjects:\n")
-// for (var i = 0; i < subjects.length; i++){
-//     console.log("subjects[" + i + "]: " + subjects[i] + "\n");
-//     console.log("subjects[" + i + "].id: " + subjects[i].id + "\n");
-//     console.log("subjects[" + i + "][\"a\"][0]: " + subjects[i]["a"][0] + "\n");
-//     console.log("subjects[" + i + "][\"a\"][0].x: " + subjects[i]["a"][0].x + "\n");
-//     console.log("subjects[" + i + "][\"a\"][0].y: " + subjects[i]["a"][0].y + "\n");
-//     console.log("subjects[" + i + "][\"a\"][0].price: " + subjects[i]["a"][0].price + "\n");
-//     console.log("subjects[" + i + "][\"a\"][0].seller: " + subjects[i]["a"][0].seller + "\n");
-// }
-
         // Split users into buyers and sellers
         // Set in config
         var sellers = [];
@@ -84,28 +73,6 @@ RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs)
                 });
             }
         }
-// //
-// console.log("sellers[]:\n");
-// for (var i = 0; i < sellers.length; i++){
-//     for (var j = 0; j < allocationCount; j++) {
-//         console.log("sellers[" + i + "].id: " + sellers[i].id + "\n");
-//         console.log("sellers[" + i + "][\"a\"][" + j + "].x: " + sellers[i]["a"][j].x + "\n");
-//         console.log("sellers[" + i + "][\"a\"][" + j + "].y: " + sellers[i]["a"][j].y + "\n");
-//         console.log("sellers[" + i + "][\"a\"][" + j + "].price: " + sellers[i]["a"][j].price + "\n");
-//         console.log("sellers[" + i + "][\"a\"][" + j + "].seller: " + sellers[i]["a"][j].seller + "\n");
-//     }
-// }
-// console.log("buyers[]:\n");
-// for (var i = 0; i < buyers.length; i++){
-//     for (var j = 0; j < allocationCount; j++) {
-//         console.log("buyers[" + i + "].id: " + buyers[i].id + "\n");
-//         console.log("buyers[" + i + "][\"a\"][" + j + "].x: " + buyers[i]["a"][j].x + "\n");
-//         console.log("buyers[" + i + "][\"a\"][" + j + "].y: " + buyers[i]["a"][j].y + "\n");
-//         console.log("buyers[" + i + "][\"a\"][" + j + "].price: " + buyers[i]["a"][j].price + "\n");
-//         console.log("buyers[" + i + "][\"a\"][" + j + "].seller: " + buyers[i]["a"][j].seller + "\n");
-//     }
-// }
-// //
 
         // Calculate noise       
         var dxSellers = [];
@@ -143,45 +110,6 @@ RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs)
             }    
         }
 
-// //
-// console.log("dxSellers[]:\n")
-// for (var i = 0; i < dxSellers.length; i++){
-//     for (var j = 0; j < dxSellers[0].length; j++) {
-//         console.log("dxSellers[" + i + "][" + j + "]: " + dxSellers[i][j] + "\n");
-//     }
-// }
-// console.log("dxBuyers[]:\n")
-// for (var i = 0; i < dxBuyers.length; i++){
-//     for (var j = 0; j < dxBuyers[0].length; j++) {
-//         console.log("dxBuyers[" + i + "][" + j + "]: " + dxBuyers[i][j] + "\n");
-//    }
-// }
-// console.log("dySellers[]:\n")
-// for (var i = 0; i < dySellers.length; i++){
-//     for (var j = 0; j < dySellers[0].length; j++) {
-//         console.log("dySellers[" + i + "][" + j + "]: " + dySellers[i][j] + "\n");
-//     }
-// }
-// console.log("dyBuyers[]:\n")
-// for (var i = 0; i < dyBuyers.length; i++){
-//     for (var j = 0; j < dyBuyers[0].length; j++) {
-//         console.log("dyBuyers[" + i + "][" + j + "]: " + dyBuyers[i][j] + "\n");
-//     }
-// }
-// console.log("distSellers[]:\n")
-// for (var i = 0; i < distSellers.length; i++){
-//     for (var j = 0; j < distSellers[0].length; j++) {
-//         console.log("distSellers[" + i + "][" + j + "]: " + distSellers[i][j] + "\n");
-//     }
-// }
-// console.log("distBuyers[]:\n")
-// for (var i = 0; i < distBuyers.length; i++){
-//     for (var j = 0; j < distBuyers[0].length; j++) {
-//         console.log("distBuyers[" + i + "][" + j + "]: " + distBuyers[i][j] + "\n");
-//      }
-// }
-// //
-
         noiseSellers = sellers.map(function(seller, index) { 
             var noise = 0;
             for (var j = 1; j < allocationCount - 1; ++j) {
@@ -211,20 +139,7 @@ RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs)
                 "noise": noise
             };
         });
-        	
-//
-console.log("noiseSellers[]:\n")
-for (var i = 0; i < noiseSellers.length; i++){
-    console.log("noiseSellers[" + i + "].id: " + noiseSellers[i].id + "\n");
-    console.log("noiseSellers[" + i + "].noise: " + noiseSellers[i].noise + "\n");
-}
-console.log("noiseBuyers[]:\n")
-for (var i = 0; i < noiseBuyers.length; i++){
-    console.log("noiseBuyers[" + i + "].id: " + noiseBuyers[i].id + "\n");
-    console.log("noiseBuyers[" + i + "].noise: " + noiseBuyers[i].noise + "\n");
-}
-//
-
+ 
         // Sort in descending order of noise
         noiseSellers.sort(function(a, b) {
             return b.noise - a.noise;
@@ -247,42 +162,6 @@ for (var i = 0; i < noiseBuyers.length; i++){
             return subject;
         });
 
-
-//
-console.log("noiseSellers[]:\n")
-for (var i = 0; i < noiseSellers.length; i++){
-    console.log("noiseSellers[" + i + "].id: " + noiseSellers[i].id + "\n");
-    console.log("noiseSellers[" + i + "].noise: " + noiseSellers[i].noise + "\n");
-}
-console.log("noiseBuyers[]:\n")
-for (var i = 0; i < noiseBuyers.length; i++){
-    console.log("noiseBuyers[" + i + "].id: " + noiseBuyers[i].id + "\n");
-    console.log("noiseBuyers[" + i + "].noise: " + noiseBuyers[i].noise + "\n");
-}
-//
-
-//         // Remove the two subjects with greatest noise in both sets
-//         noiseSellers.splice(0, 2);
-//         noiseBuyers.splice(0, 2);
-// //
-// console.log("noiseSellers[]:\n")
-// for (var i = 0; i < noiseSellers.length; i++){
-//     console.log("noiseSellers[" + i + "].id: " + noiseSellers[i].id + "\n");
-//     console.log("noiseSellers[" + i + "].noise: " + noiseSellers[i].noise + "\n");
-//     for (var j = 0; j < noiseSellers[i]["a"].length; j++) {
-//         console.log("noiseSellers[" + i + "][\"a\"][" + j + "].price: " + noiseSellers[i]["a"][j].price + "\n");
-//     }
-// }
-// console.log("noiseBuyers[]:\n")
-// for (var i = 0; i < noiseBuyers.length; i++){
-//     console.log("noiseBuyers[" + i + "].id: " + noiseBuyers[i].id + "\n");
-//     console.log("noiseBuyers[" + i + "].noise: " + noiseBuyers[i].noise + "\n");
-//     for (var j = 0; j < noiseBuyers[i]["a"].length; j++) {
-//         console.log("noiseBuyers[" + i + "][\"a\"]" + j + "].price: " + noiseBuyers[i]["a"][j].price + "\n");
-//     }
-// }
-// //
-
         if (noiseSellers[0]["a"].length != 25 || noiseBuyers[0]["a"].length != 25) {
             return {
                 "getAssignedGroup": function(subject) {
@@ -292,36 +171,10 @@ for (var i = 0; i < noiseBuyers.length; i++){
         }
         finalSellers = noiseSellers.slice(0);
         finalBuyers = noiseBuyers.slice(0);
-//
-console.log("finalSellers[]:\n")
-for (var i = 0; i < finalSellers.length; i++){
-    console.log("finalSellers[" + i + "].id: " + finalSellers[i].id + "\n");
-    console.log("finalSellers[" + i + "].noise: " + finalSellers[i].noise + "\n");
-    console.log("finalSellers[" + i + "].assignedGroup: " + finalSellers[i].assignedGroup + "\n");
-}
-console.log("finalBuyers[]:\n")
-for (var i = 0; i < finalBuyers.length; i++){
-    console.log("finalBuyers[" + i + "].id: " + finalBuyers[i].id + "\n");
-    console.log("finalBuyers[" + i + "].noise: " + finalBuyers[i].noise + "\n");
-    console.log("finalBuyers[" + i + "].assignedGroup: " + finalBuyers[i].assignedGroup + "\n");
-}
-//        
+     
         finalSellers.splice(0, 2);
         finalBuyers.splice(0, 2);
-//
-console.log("finalSellers[]:\n")
-for (var i = 0; i < finalSellers.length; i++){
-    console.log("finalSellers[" + i + "].id: " + finalSellers[i].id + "\n");
-    console.log("finalSellers[" + i + "].noise: " + finalSellers[i].noise + "\n");
-    console.log("finalSellers[" + i + "].assignedGroup: " + finalSellers[i].assignedGroup + "\n");
-}
-console.log("finalBuyers[]:\n")
-for (var i = 0; i < finalBuyers.length; i++){
-    console.log("finalBuyers[" + i + "].id: " + finalBuyers[i].id + "\n");
-    console.log("finalBuyers[" + i + "].noise: " + finalBuyers[i].noise + "\n");
-    console.log("finalBuyers[" + i + "].assignedGroup: " + finalBuyers[i].assignedGroup + "\n");
-}
-//        
+      
         finalSellers.sort(function(a, b) {  
             var sA = 0;
             var sB = 0;
@@ -329,7 +182,6 @@ for (var i = 0; i < finalBuyers.length; i++){
                 sA += a["a"][i].x;
                 sB += b["a"][i].x;
             } 
-console.log("sA: " + sA + " sB: " + sB + "\n");
             return sA - sB;
         }).map(function(subject, index) {
             subject.assignedGroup = getSellerGroup(index, finalSellers.length);
@@ -349,26 +201,13 @@ console.log("sA: " + sA + " sB: " + sB + "\n");
             subject.assignedGroup = getBuyerGroup(index, finalBuyers.length);
             return subject;
         });
-//
-console.log("finalSellers[]:\n")
-for (var i = 0; i < finalSellers.length; i++){
-    console.log("finalSellers[" + i + "].id: " + finalSellers[i].id + "\n");
-    console.log("finalSellers[" + i + "].noise: " + finalSellers[i].noise + "\n");
-    console.log("finalSellers[" + i + "].assignedGroup: " + finalSellers[i].assignedGroup + "\n");
-}
-console.log("finalBuyers[]:\n")
-for (var i = 0; i < finalBuyers.length; i++){
-    console.log("finalBuyers[" + i + "].id: " + finalBuyers[i].id + "\n");
-    console.log("finalBuyers[" + i + "].noise: " + finalBuyers[i].noise + "\n");
-    console.log("finalBuyers[" + i + "].assignedGroup: " + finalBuyers[i].assignedGroup + "\n");
-}
-//
 
 
         var inTTMMap = {};
         var assignedGroupMap = {};
         var firstSeller = false;
         var firstBuyer = false;
+
         noiseSellers.forEach(function(subject) {
             console.log("inTTM: " + subject.inTTM + "\n");
             inTTMMap[subject.id] = subject.inTTM;
@@ -382,6 +221,7 @@ for (var i = 0; i < finalBuyers.length; i++){
             console.log("Setting subject " + subject.id + " to group 2 not in TTM\n");
             }
         });
+
         noiseBuyers.forEach(function(subject) {
             console.log("inTTM: " + subject.inTTM + "\n");
             inTTMMap[subject.id] = subject.inTTM;
@@ -395,21 +235,17 @@ for (var i = 0; i < finalBuyers.length; i++){
             console.log("Setting subject " + subject.id + " to group 2 not in TTM\n");
             }
         });
+
         finalSellers.forEach(function(subject) {
             assignedGroupMap[subject.id] = subject.assignedGroup;
             console.log("Setting subject " + subject.id + " to group " + subject.assignedGroup + "\n");
         });
+
         finalBuyers.forEach(function(subject) {
             assignedGroupMap[subject.id] = subject.assignedGroup;
             console.log("Setting subject " + subject.id + " to group " + subject.assignedGroup + "\n");
         });
-//
-console.log("assignedGroupMap[]:\n");
-for (var i = 1; i <= subjects.length; i++){
-    console.log("assignedGroupMap[" + i + "]: " + assignedGroupMap[i] + "\n");
-    console.log("inTTMMap[" + i + "]: " + inTTMMap[i] + "\n");
-}
-//
+
         return {
             "getAssignedGroup": function(subject) {
                 return {

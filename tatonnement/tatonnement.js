@@ -25,19 +25,14 @@ RedwoodRevealedPreferences.factory("RPTatonnement", function () {
     api.excessDemand = function(subjectData) {
         return subjectData.reduce(function(sum, data) {
             if (data.inTTM) {
-console.log("inTTM: " + data.inTTM + "\n");
-console.log("selection: " + data.selection + "\n");
-console.log("sum: " + sum + " + excessDemand: " + (data.selection[0] - data.endowment.x) +
-                " = return: " + (sum + (data.selection[0] - data.endowment.x)) + "\n");
                 return sum + (data.selection[0] - data.endowment.x);
             } else {
-console.log("return sum: " + sum + "\n");
                 return sum;
             }
         }, 0); 
     }
 
-// excessDemandPerCapita = excessDemand / (subjectData.length - 2)
+    // excessDemandPerCapita = excessDemand / (subjectData.length - 2)
     api.RoundContext = function(price, subjectData) {
         var excessDemand = api.excessDemand(subjectData);
         return {
@@ -71,17 +66,14 @@ console.log("return sum: " + sum + "\n");
             })[0];
         }
 
-        // var weightVectorFinished = function() {
-        //     return _weightIndex >= _weightVector.length
-        // }
-
         var addExcessDemand1 = function(excessDemand) {
             // increment weight index if the sign of the excess demand changes
             if (excessDemandHistory1.length > 0) {
                 var previousDemand = excessDemandHistory1[excessDemandHistory1.length - 1];
 
                 if (excessDemand * previousDemand < 0) {
-                    _weightIndex1 = Math.min(_weightIndex1 + 1, _weightVector.length - 1); //_weightIndex1 never moves beyond end of _weightVector
+                    //_weightIndex1 never moves beyond end of _weightVector
+                    _weightIndex1 = Math.min(_weightIndex1 + 1, _weightVector.length - 1); 
                 }
             }
             excessDemandHistory1.push(excessDemand);
@@ -93,32 +85,24 @@ console.log("return sum: " + sum + "\n");
                 var previousDemand = excessDemandHistory2[excessDemandHistory2.length - 1];
 
                 if (excessDemand * previousDemand < 0) {
-                    _weightIndex2 = Math.min(_weightIndex2 + 1, _weightVector.length - 1); //_weightIndex2 never moves beyond end of _weightVector
+                    //_weightIndex2 never moves beyond end of _weightVector
+                    _weightIndex2 = Math.min(_weightIndex2 + 1, _weightVector.length - 1); 
                 }
             }
             excessDemandHistory2.push(excessDemand);
         }
 
-// PROBABLY NEED TO CHANGE THIS
         var adjustedPrice1 = function(roundContext) {
             var adjustedPrice1;
             var excessDemandSign = sign(roundContext.excessDemand);
 
             var weight = _weightVector[_weightIndex1] / _expectedExcess;
-
-console.log("excessDemandPerCapita1: " + roundContext.excessDemandPerCapita + "\n");
-console.log("weight1: " + weight + "\n");
                 
             // make sure angular difference is no more than 15 degrees
             var angularDiff = weight * roundContext.excessDemandPerCapita;
             var maxAngularDiff = _maxAngularDiff * excessDemandSign;
             var constrainedAngularDiff = Math.min(Math.abs(angularDiff), Math.abs(maxAngularDiff)) * excessDemandSign;
             var newPriceAngle = Math.atan(roundContext.price) + constrainedAngularDiff;
-
-console.log("A1: " + angularDiff + "\n");
-console.log("B1: " + maxAngularDiff + "\n");
-console.log("C1: " + constrainedAngularDiff + "\n");
-
 
             // make sure that 0.01 <= price <= 100
             var priceLowerBoundAngle = Math.atan(_priceLowerBound);
@@ -129,8 +113,6 @@ console.log("C1: " + constrainedAngularDiff + "\n");
                 adjustedPrice1 = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle));
             }
 
-console.log("pnosnap1: " + adjustedPrice1 + "\n");
-
             if (_snapPriceToGrid1) {
                 var snappedPrice = priceSnappedToGrid(adjustedPrice1);
                 if (snappedPrice == roundContext.price) {
@@ -140,7 +122,6 @@ console.log("pnosnap1: " + adjustedPrice1 + "\n");
                 }
             }
 
-console.log("psnap1: " + adjustedPrice1 + "\n");
             return adjustedPrice1;
         }
 
@@ -150,20 +131,12 @@ console.log("psnap1: " + adjustedPrice1 + "\n");
             var excessDemandSign = sign(roundContext.excessDemand);
 
             var weight = _weightVector[_weightIndex2] / _expectedExcess;
-
-console.log("excessDemandPerCapita2: " + roundContext.excessDemandPerCapita + "\n");
-console.log("weight2: " + weight + "\n");
-                
+               
             // make sure angular difference is no more than 15 degrees
             var angularDiff = weight * roundContext.excessDemandPerCapita;
             var maxAngularDiff = _maxAngularDiff * excessDemandSign;
             var constrainedAngularDiff = Math.min(Math.abs(angularDiff), Math.abs(maxAngularDiff)) * excessDemandSign;
             var newPriceAngle = Math.atan(roundContext.price) + constrainedAngularDiff;
-
-console.log("A2: " + angularDiff + "\n");
-console.log("B2: " + maxAngularDiff + "\n");
-console.log("C2: " + constrainedAngularDiff + "\n");
-
 
             // make sure that 0.01 <= price <= 100
             var priceLowerBoundAngle = Math.atan(_priceLowerBound);
@@ -174,8 +147,6 @@ console.log("C2: " + constrainedAngularDiff + "\n");
                 adjustedPrice2 = Math.tan(Math.min(newPriceAngle, priceUpperBoundAngle));
             }
 
-console.log("pnosnap2: " + adjustedPrice2 + "\n");
-
             if (_snapPriceToGrid2) {
                 var snappedPrice = priceSnappedToGrid(adjustedPrice2);
                 if (snappedPrice == roundContext.price) {
@@ -185,7 +156,6 @@ console.log("pnosnap2: " + adjustedPrice2 + "\n");
                 }
             }
 
-console.log("psnap2: " + adjustedPrice2 + "\n");
             return adjustedPrice2;
         }
 
@@ -234,7 +204,6 @@ console.log("psnap2: " + adjustedPrice2 + "\n");
         }
 
         return {
-            // "weightVectorFinished": weightVectorFinished,
             "addExcessDemand1": addExcessDemand1,
             "addExcessDemand2": addExcessDemand2,
             "adjustedPrice1": adjustedPrice1,

@@ -46,12 +46,36 @@ RedwoodRevealedPreferences.controller("RPStartController",
         var userIndex = (parseInt(rs.user_id) - 1) % 2;
 
         $scope.config = configManager.loadPerSubject(rs, {
-            Ex                      : 0,       // Endowment, Price and Probability Options
+
+            /* Endowment, Price and Probability Options */
+            Ex                      : 0,       
             Ey                      : 0,
             Price                   : 1,
             ProbX                   : 0.5,
             useDefaultSelection     : false,
-            epsilon1                : 1,        // Tatonnement Options
+
+            /* Visual Options */
+            XLimit                  : 100,
+            YLimit                  : 100,
+            labelX                  : "X",
+            labelY                  : "Y",
+            limitAnimDuration       : 0,
+            plotResult              : true,
+            showEndowment           : true,
+            showTable               : false,
+            showMaxPayouts          : true,
+
+            /* Interaction Options */
+            constraintsX            : false,
+            
+            /* Timing Options */
+            rounds                  : 1,
+            delay                   : 5,
+            timeLimit               : 0,
+            pause                   : false,
+
+            /* Tatonnement Options */
+            epsilon1                : 1,        
             epsilon2                : 2,
             roundsUnderEpsilon      : 2,
             expectedExcess          : 13.5,
@@ -63,30 +87,11 @@ RedwoodRevealedPreferences.controller("RPStartController",
             priceGrid               : [0.2, 0.28, 0.36, 0.43, 0.5, 0.57, 0.64, 0.7, 0.76, 0.83, 0.89, 0.94,
                                        1, 10.6, 1.13, 1.21, 1.31, 1.43, 1.57, 1.75, 2, 2.33, 2.81, 3.57, 5],
             weightVector            : [0.1745, 0.08725, 0.043625, 0.0218125, 0.01090625],
-            computeGroup            : false,   // Endowment Assignment Options
-            Ax                      : 100,     // Ax, Ay, Bx, By - Used if computeEndowment is true
-            Ay                      : 0,       // - must be the same values as the two sets of Ex and Ey
-            Bx                      : 0,       // - this is assuming only 2 different sets of endowments are being used.
-            By                      : 50,        
-            firstMarkets            : true,
-            TTMPeriod               : false,   // True for all TTM periods
+            TTMPeriod               : false,   // True for all TTM periods      
+            firstMarkets            : true,    // True for first TTM Period
             seller                  : true,    // True for all "sellers" in market
-            saveAllocation          : false,   // True for all subjects whose decisions should be
-                                               // used to determine TTM prices
-            XLimit                  : 100,     // Visual Options
-            YLimit                  : 100,
-            labelX                  : "X",
-            labelY                  : "Y",
-            limitAnimDuration       : 0,
-            plotResult              : true,
-            showEndowment           : true,
-            showTable               : false,
-            showMaxPayouts          : true,
-            constraintsX            : false,   // Interaction Options
-            rounds                  : 1,       // Timing Options
-            delay                   : 5,
-            timeLimit               : 0,
-            pause                   : false,
+            saveAllocation          : false,   // True for all periods whose decisions 
+                                               // should be used to determine TTM prices
         });
 
         $scope.endowment = {
@@ -96,9 +101,9 @@ RedwoodRevealedPreferences.controller("RPStartController",
 
         rs.set("rp.seller", $scope.config.seller);
 
-        if ($scope.config.computeGroup) {
+        if ($scope.config.TTMPeriod) {
             var assignedGroup = ea.getAssignedGroup(rs.self.user_id, {
-                firstMarkets            : $scope.config.firstMarkets            
+                firstMarkets : $scope.config.firstMarkets            
             });
 
             $scope.assignedGroup = assignedGroup.group;
@@ -144,7 +149,6 @@ RedwoodRevealedPreferences.controller("RPStartController",
         // set initial price
         var price = rs.self.get("rp.price");
         $scope.price = $scope.currentRound > 1 ? price : $scope.config.Price;
-        console.log("price: " + $scope.price);
 
         // find x and y intercepts
         $scope.intercepts = {};
@@ -168,7 +172,9 @@ RedwoodRevealedPreferences.controller("RPStartController",
         rs.trigger("rp.round_started", {
             "round": $scope.currentRound,
             "endowment": $scope.endowment,
-            "price": $scope.price
+            "price": $scope.price,
+            "market": $scope.assignedGroup,
+            "inTTM": $scope.inTTM
 
         });
 
@@ -185,145 +191,6 @@ RedwoodRevealedPreferences.controller("RPStartController",
                 confirmButton.effect("highlight", {color: "#c6feb6"}, 500);
             });
 
-
-            /*****************************************
-             * BEGIN TEST
-             *****************************************/
-    // if (!$scope.config.TTMPeriod) {
-            //Coordinates where amounts of good x and y are equal
-            var middle = {};
-            middle.x = ($scope.endowment.y + $scope.price * $scope.endowment.x) / (1 + $scope.price);
-            middle.y = middle.x;
-
-            // Coordinates of max of good with highest endowment
-            var corner = {};
-            if ($scope.endowment.x != 0) {
-                if ($scope.price <= 1) {
-                    corner.x = $scope.endowment.x;
-                    corner.y = $scope.endowment.y;
-                } else {
-                    corner.x = 0;
-                    corner.y = ($scope.price * $scope.endowment.x);
-                }
-            } else {
-                if ($scope.price >= 1) {
-                    corner.x = $scope.endowment.x;
-                    corner.y = $scope.endowment.y;
-                } else {
-                    corner.x = ((1 / $scope.price) * $scope.endowment.y);
-                    corner.y = 0;
-                }
-            }
-
-            // For use in 3 "type" test
-
-            // Coordinates 1/3 of the way between the middle and corner
-            var onethird = {};
-            onethird.x = ((2/3) * middle.x) + ((1/3) * corner.x);
-            onethird.y = ((2/3) * middle.y) + ((1/3) * corner.y);
-
-            // Coordinates 3/4 of the way between the middle and corner
-            var threeforths = {};
-            threeforths.x = ((1/4) * middle.x) + ((3/4) * corner.x);
-            threeforths.y = ((1/4) * middle.y) + ((3/4) * corner.y);
-
-            // For use in 6 "type" test
-
-            // Coordinates 20% of the way between the middle and corner
-            var twenty = {};
-            twenty.x = ((8/10) * middle.x) + ((2/10) * corner.x);
-            twenty.y = ((8/10) * middle.y) + ((2/10) * corner.y);
-
-            // Coordinates 40% of the way between the middle and corner
-            var forty = {};
-            forty.x = ((6/10) * middle.x) + ((4/10) * corner.x);
-            forty.y = ((6/10) * middle.y) + ((4/10) * corner.y);
-
-            // Coordinates 60% of the way between the middle and corner
-            var sixty = {};
-            sixty.x = ((4/10) * middle.x) + ((6/10) * corner.x);
-            sixty.y = ((4/10) * middle.y) + ((6/10) * corner.y);
-
-            // Coordinates 80% of the way between middle and corner
-            var eighty = {};
-            eighty.x = ((2/10) * middle.x) + ((8/10) * corner.x);
-            eighty.y = ((2/10) * middle.y) + ((8/10) * corner.y);
-
-
-            var mychoice = {};
-
-            // EITHER USE THIS OR 6 subject "type" NOT BOTH
-            // 3 subject "types"
-            if (rs.self.user_id % 3 == 0) { 
-                mychoice.x = middle.x;
-                mychoice.y = middle.y;
-            } else if (rs.self.user_id % 3 == 1) { 
-                mychoice.x = onethird.x;
-                mychoice.y = onethird.y;
-            } else {
-                mychoice.x = threeforths.x;
-                mychoice.y = threeforths.y;
-            }
-
-            // EITHER USE THIS OR 3 subject "type" NOT BOTH
-            // 16 subject "types"
-            // if (rs.self.user_id % 16 == 0) {
-            //     mychoice.x = middle.x;
-            //     mychoice.y = middle.y;
-            // } else if (rs.self.user_id % 16 == 1) {
-            //     mychoice.x = corner.x;
-            //     mychoice.y = corner.y;
-            // } else if (rs.self.user_id % 16 == 2) {
-            //     mychoice.x = twenty.x;
-            //     mychoice.y = twenty.y;
-            // } else if (rs.self.user_id % 16 == 3) {
-            //     mychoice.x = forty.x;
-            //     mychoice.y = forty.y;
-            // } else if (rs.self.user_id % 16 == 4) {
-            //     mychoice.x = sixty.x;
-            //     mychoice.y = sixty.y;
-            // } else if (rs.self.user_id % 16 == 5) {
-            //     mychoice.x = eighty.x;
-            //     mychoice.y = eighty.y;
-            // } else if (rs.self.user_id % 16 == 6) {
-            //     mychoice.x = onethird.x;
-            //     mychoice.y = onethird.y;
-            // }else if (rs.self.user_id % 16 == 7) {
-            //     mychoice.x = middle.x;
-            //     mychoice.y = middle.y;
-            // } else if (rs.self.user_id % 16 == 8) {
-            //     mychoice.x = corner.x;
-            //     mychoice.y = corner.y;
-            // } else if (rs.self.user_id % 16 == 9) {
-            //     mychoice.x = twenty.x;
-            //     mychoice.y = twenty.y;
-            // } else if (rs.self.user_id % 16 == 10) {
-            //     mychoice.x = forty.x;
-            //     mychoice.y = forty.y;
-            // }else if (rs.self.user_id % 16 == 11) {
-            //     mychoice.x = sixty.x;
-            //     mychoice.y = sixty.y;
-            // } else if (rs.self.user_id % 16 == 12) {
-            //     mychoice.x = threeforths.x;
-            //     mychoice.y = threeforths.y;
-            // } else if (rs.self.user_id % 16 == 13) {
-            //     mychoice.x = onethird.x;
-            //     mychoice.y = onethird.y;
-            // } else if (rs.self.user_id % 16 == 14) {
-            //     mychoice.x = eighty.x;
-            //     mychoice.y = eighty.y;
-            // } else {
-            //     mychoice.x = threeforths.x;
-            //     mychoice.y = threeforths.y;                
-            // }
-           
-            $scope.selection = [mychoice.x, mychoice.y];
-            rs.trigger("rp.selection", $scope.selection);
-            $scope.confirm();
-    // }
-            /****************************************
-             * END TEST
-             ****************************************/
          }
 
         // setup timer
@@ -388,8 +255,6 @@ RedwoodRevealedPreferences.controller("RPStartController",
                         group2.push(rs.subjects[i]);
                     }
                 }
-
-console.log("assignedGroup: " + rs.self.get("rp.assignedGroup") + "\n");
 
                 if (rs.self.get("rp.assignedGroup") == 1 && !$scope.group1Finished) {
 
@@ -502,11 +367,12 @@ console.log("assignedGroup: " + rs.self.get("rp.assignedGroup") + "\n");
                         newPrice = tatonnement.adjustedPrice2(roundContext2);
                     }
 
-                } else if ($scope.group1Finished == true && $scope.group2Finished == true) {
+                }
+
+                if ($scope.group1Finished == true && $scope.group2Finished == true) {
                     rs.next_period();
                     return;
-                } else {
-                }
+                } 
 
                 // Proceed to next round
                 rs.set("rp.price", newPrice);
