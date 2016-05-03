@@ -178,131 +178,28 @@ RedwoodRevealedPreferences.controller("RPStartController",
 
         });
 
-        if ((rs.self.get("rp.assignedGroup") == 1 && $scope.group1Finished) ||
+        if ($scope.group1Finished && $scope.group2Finished) {
+            $scope.selection = rs.self.get("rp.final_allocation");
+            rs.trigger("rp.selection", $scope.selection);
+            document.getElementById("modalMessage").innerHTML = 
+                                "The period is over for your market. Your choice of " + 
+                                $scope.selection[0].toFixed(2) + " X and " + 
+                                $scope.selection[1].toFixed(2) + " Y is final. Click anywhere to continue.";
+            $("#marketModal").modal();
+            setTimeout(function(){$scope.confirm()}, 7000);
+        } else if ((rs.self.get("rp.assignedGroup") == 1 && $scope.group1Finished) ||
             (rs.self.get("rp.assignedGroup") == 2 && $scope.group2Finished)) {
-            window.alert("The period is over for your market, your choice of " + " X and " + 
-                            " Y is final. Please click ok to continue " +
-                            "while we wait for the other market to finish.");
-            $scope.confirm();
+            $scope.selection = rs.self.get("rp.final_allocation");
+            rs.trigger("rp.selection", $scope.selection);
+            document.getElementById("modalMessage").innerHTML = 
+                                "The period is over for your market. Your choice of " + 
+                                $scope.selection[0].toFixed(2) + " X and " + 
+                                $scope.selection[1].toFixed(2) + " Y is final. Click anywhere to continue " +
+                                "while we wait for the other market to finish.";
+            $("#marketModal").modal();
+            setTimeout(function(){$scope.confirm()}, 5000);
         } else {
             $scope.inputEnabled = true;
-
-
-////////////////////////////////////////
-
-            //Coordinates where amounts of good x and y are equal
-            var middle = {};
-            middle.x = ($scope.endowment.y + $scope.price * $scope.endowment.x) / (1 + $scope.price);
-            middle.y = middle.x;
-
-            // Coordinates of max of good with highest endowment
-            var corner = {};
-            if ($scope.endowment.x != 0) {
-                if ($scope.price <= 1) {
-                    corner.x = $scope.endowment.x;
-                    corner.y = $scope.endowment.y;
-                } else {
-                    corner.x = 0;
-                    corner.y = ($scope.price * $scope.endowment.x);
-                }
-            } else {
-                if ($scope.price >= 1) {
-                    corner.x = $scope.endowment.x;
-                    corner.y = $scope.endowment.y;
-                } else {
-                    corner.x = ((1 / $scope.price) * $scope.endowment.y);
-                    corner.y = 0;
-                }
-            }
-
-            // Coordinates 1/3 of the way between the middle and corner
-            var onethird = {};
-            onethird.x = ((2/3) * middle.x) + ((1/3) * corner.x);
-            onethird.y = ((2/3) * middle.y) + ((1/3) * corner.y);
-
-            // Coordinates 3/4 of the way between the middle and corner
-            var threeforths = {};
-            threeforths.x = ((1/4) * middle.x) + ((3/4) * corner.x);
-            threeforths.y = ((1/4) * middle.y) + ((3/4) * corner.y);
-
-            // Coordinates 20% of the way between the middle and corner
-            var twenty = {};
-            twenty.x = ((8/10) * middle.x) + ((2/10) * corner.x);
-            twenty.y = ((8/10) * middle.y) + ((2/10) * corner.y);
-
-            // Coordinates 40% of the way between the middle and corner
-            var forty = {};
-            forty.x = ((6/10) * middle.x) + ((4/10) * corner.x);
-            forty.y = ((6/10) * middle.y) + ((4/10) * corner.y);
-
-            // Coordinates 60% of the way between the middle and corner
-            var sixty = {};
-            sixty.x = ((4/10) * middle.x) + ((6/10) * corner.x);
-            sixty.y = ((4/10) * middle.y) + ((6/10) * corner.y);
-
-            // Coordinates 80% of the way between middle and corner
-            var eighty = {};
-            eighty.x = ((2/10) * middle.x) + ((8/10) * corner.x);
-            eighty.y = ((2/10) * middle.y) + ((8/10) * corner.y);
-
-
-            var mychoice = {};
-
-            if (rs.self.user_id % 16 == 0) {
-                mychoice.x = middle.x;
-                mychoice.y = middle.y;
-            } else if (rs.self.user_id % 16 == 1) {
-                mychoice.x = corner.x;
-                mychoice.y = corner.y;
-            } else if (rs.self.user_id % 16 == 2) {
-                mychoice.x = twenty.x;
-                mychoice.y = twenty.y;
-            } else if (rs.self.user_id % 16 == 3) {
-                mychoice.x = forty.x;
-                mychoice.y = forty.y;
-            } else if (rs.self.user_id % 16 == 4) {
-                mychoice.x = sixty.x;
-                mychoice.y = sixty.y;
-            } else if (rs.self.user_id % 16 == 5) {
-                mychoice.x = eighty.x;
-                mychoice.y = eighty.y;
-            } else if (rs.self.user_id % 16 == 6) {
-                mychoice.x = onethird.x;
-                mychoice.y = onethird.y;
-            }else if (rs.self.user_id % 16 == 7) {
-                mychoice.x = middle.x;
-                mychoice.y = middle.y;
-            } else if (rs.self.user_id % 16 == 8) {
-                mychoice.x = corner.x;
-                mychoice.y = corner.y;
-            } else if (rs.self.user_id % 16 == 9) {
-                mychoice.x = twenty.x;
-                mychoice.y = twenty.y;
-            } else if (rs.self.user_id % 16 == 10) {
-                mychoice.x = forty.x;
-                mychoice.y = forty.y;
-            }else if (rs.self.user_id % 16 == 11) {
-                mychoice.x = sixty.x;
-                mychoice.y = sixty.y;
-            } else if (rs.self.user_id % 16 == 12) {
-                mychoice.x = threeforths.x;
-                mychoice.y = threeforths.y;
-            } else if (rs.self.user_id % 16 == 13) {
-                mychoice.x = onethird.x;
-                mychoice.y = onethird.y;
-            } else if (rs.self.user_id % 16 == 14) {
-                mychoice.x = eighty.x;
-                mychoice.y = eighty.y;
-            } else {
-                mychoice.x = threeforths.x;
-                mychoice.y = threeforths.y;                
-            }
-           
-            $scope.selection = [mychoice.x, mychoice.y];
-            rs.trigger("rp.selection", $scope.selection);
-            $scope.confirm();
-
-///////////////////////////////////////
 
             // flash the Confirm Selection button to alert the subject that a new round started
             // ooh the dirty dirty JQuery (.n.)
@@ -416,6 +313,8 @@ RedwoodRevealedPreferences.controller("RPStartController",
 
                         $scope.selection = [actualAllocation.x, actualAllocation.y];
 
+                        rs.set("rp.final_allocation", $scope.selection);
+
                         // reset rounds under epsilon
                         rs.set("rp.rounds_under_epsilon1_1", 0);
                         rs.set("rp.rounds_under_epsilon2_1", 0);
@@ -470,6 +369,8 @@ RedwoodRevealedPreferences.controller("RPStartController",
                                                     $scope.config.marketMaker);
 
                         $scope.selection = [actualAllocation.x, actualAllocation.y];
+
+                        rs.set("rp.final_allocation", $scope.selection);
 
                         // reset rounds under epsilon
                         rs.set("rp.rounds_under_epsilon1_2", 0);
