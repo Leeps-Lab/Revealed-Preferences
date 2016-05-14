@@ -1,6 +1,6 @@
 RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs) {
 
-	var sign = function (value) {
+    var sign = function (value) {
         if (value < 0) 
             return -1;
         else if (value > 0) 
@@ -9,9 +9,9 @@ RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs)
             return 0;
     }
 
-	var api = {};
+    var api = {};
 
-	api.EndowmentAssigner = function(subjects, options) {
+    api.EndowmentAssigner = function(subjects, options) {
 
         var defaults = {
             firstMarkets: true
@@ -48,7 +48,7 @@ RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs)
             }
         }
 
-		var subjectCount = subjects.length;
+        var subjectCount = subjects.length;
         var allocationCount = subjects[0]["a"].length; // sub[i]["a"].x = x[i]
                                                        // sub[i]["a"].y = y[i]
 
@@ -256,7 +256,7 @@ RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs)
         };
     }
 
-	api.getAssignedGroup = function(subject, options) {
+    api.getAssignedGroup = function(subject, options) {
         var allocationData = api.sortAllocationData();
         return api.EndowmentAssigner(allocationData, options).getAssignedGroup(subject);
     }
@@ -290,7 +290,7 @@ RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs)
     api.save = function () {
         // register listeners to automatically save allocations for this round
         rs.on("rp.perform_allocation", function (allocation) {
-        	var key = "rp.allocations";
+            var key = "rp.allocations";
             console.log("saving: " + allocation.x + " at " + key);
             var allocations = rs.self.get(key) || [];
             allocations.push({
@@ -303,6 +303,6 @@ RedwoodRevealedPreferences.factory("RPSorting", ["RedwoodSubject", function (rs)
         });
     }
 
-	return api;
+    return api;
 
 }]);

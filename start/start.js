@@ -208,6 +208,10 @@ RedwoodRevealedPreferences.controller("RPStartController",
                 confirmButton.effect("highlight", {color: "#c6feb6"}, 500);
             });
 
+            if (!$scope.config.TTMPeriod) {
+                $scope.confirm();
+            }
+
          }
 
         // setup timer
