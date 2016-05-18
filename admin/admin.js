@@ -51,7 +51,13 @@ RedwoodRevealedPreferences.controller("RPAdminController", ["$rootScope", "$scop
                     ra.delete_session();
                 }
             });
-
+	    $("#setPeriod").click(function() {
+       		var periodToSet = $("#periodVal").val();
+		for (var i = 0, l = ra.subjects.length; i < l; i++) {
+       			console.log("setting subject " + i + " to period " + periodToSet);
+          		ra.set_period(periodToSet, ra.subjects[i].user_id);
+      		}
+	    });
             ra.on_router_connected(function(connected) { //Display router connection status
                 var status = $("#router-status");
                 if (connected) {
